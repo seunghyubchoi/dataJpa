@@ -1,11 +1,15 @@
 package study.datajpa.repository;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
+import study.datajpa.entity.Team;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class MemberRepositoryTest {
     @Autowired
     MemberRepository memberRepository;
+    @Autowired
+    private TeamRepository teamRepository;
 
     @Test
     public void testMember() {
@@ -55,5 +61,96 @@ class MemberRepositoryTest {
         memberRepository.delete(member2);
         long deletedCount = memberRepository.count();
         assertThat(deletedCount).isEqualTo(0);
+    }
+
+    @DisplayName("")
+    @Test
+    void findByUsernameAndAgeGreaterThan() {
+        // given
+        Member m1 = new Member("AAA", 10);
+        Member m2 = new Member("AAA", 20);
+
+        // when
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        List<Member> result = memberRepository.findByUsernameAndAgeGreaterThan("AAA", 15);
+        // then
+
+        assertThat(result.get(0).getUsername()).isEqualTo("AAA");
+        assertThat(result.get(0).getAge()).isEqualTo(20);
+        assertThat(result.size()).isEqualTo(1);
+
+    }
+
+   @DisplayName("")
+   @Test
+   void findUser() {
+       // given
+       Member m1 = new Member("AAA", 10);
+       Member m2 = new Member("AAA", 20);
+
+       // when
+       memberRepository.save(m1);
+       memberRepository.save(m2);
+
+       // then
+       List<Member> result = memberRepository.findUser("AAA", 10);
+       assertThat(result.get(0)).isEqualTo(m1);
+
+   }
+
+    @DisplayName("")
+    @Test
+    void findUsernameList() {
+        // given
+        Member m1 = new Member("AAA", 10);
+        Member m2 = new Member("AAA", 20);
+
+        // when
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        // then
+        List<String> usernameList = memberRepository.findUsernameList();
+        for (String s : usernameList) {
+            System.out.println("s = " + s);
+        }
+    }
+
+    @DisplayName("")
+    @Test
+    void findMemberDto() {
+        // given
+        Team team = new Team("teamA");
+        teamRepository.save(team);
+
+        Member m1 = new Member("AAA", 10);
+        m1.setTeam(team);
+        memberRepository.save(m1);
+
+        // then
+        List<MemberDto> usernameList = memberRepository.findMemberDto();
+        for (MemberDto s : usernameList) {
+            System.out.println("s = " + s);
+        }
+    }
+
+    @DisplayName("")
+    @Test
+    void findByNames() {
+        // given
+        Member m1 = new Member("AAA", 10);
+        Member m2 = new Member("AAA", 20);
+
+        // when
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        // then
+        List<Member> usernameList = memberRepository.findByNames(Arrays.asList("AAA", "BBB"));
+        for (Member s : usernameList) {
+            System.out.println("s = " + s);
+        }
     }
 }
