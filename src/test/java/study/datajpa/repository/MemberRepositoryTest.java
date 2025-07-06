@@ -30,6 +30,8 @@ class MemberRepositoryTest {
     private TeamRepository teamRepository;
     @PersistenceContext
     EntityManager em;
+    @Autowired
+    MemberQueryRepository memberQueryRepository;
 
     @Test
     public void testMember() {
